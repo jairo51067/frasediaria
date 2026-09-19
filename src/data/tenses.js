@@ -15,7 +15,6 @@ function getVerbForm(verb, pronoun, form) {
   return v.v1.split('/')[0];
 }
 
-// --- PRESENTE ---
 export const PRESENT_SIMPLE = {
   key: 'present_simple', name: 'Present Simple', level: 'beginner', floor: 'present', category: 'simple', structure: 'Pronoun + Verb (Form 1) + Object',
   build: (pronoun, verb, level = 'beginner') => {
@@ -71,7 +70,6 @@ export const PRESENT_PERFECT_CONTINUOUS = {
   }
 };
 
-// --- PASADO ---
 export const PAST_SIMPLE = {
   key: 'past_simple', name: 'Past Simple', level: 'beginner', floor: 'past', category: 'simple', structure: 'Pronoun + Verb (Form 2) + Object',
   build: (pronoun, verb, level = 'beginner') => {
@@ -125,7 +123,6 @@ export const PAST_PERFECT_CONTINUOUS = {
   }
 };
 
-// --- FUTURO ---
 export const FUTURE_SIMPLE = {
   key: 'future_simple', name: 'Future Simple', level: 'beginner', floor: 'future', category: 'simple', structure: 'Pronoun + will + Verb (Form 1) + Object',
   build: (pronoun, verb, level = 'beginner') => {
@@ -178,7 +175,6 @@ export const FUTURE_PERFECT_CONTINUOUS = {
   }
 };
 
-// --- CONDICIONAL ---
 export const PRESENT_CONDITIONAL = {
   key: 'present_conditional', name: 'Present Conditional', level: 'advanced', floor: 'additional', category: 'conditional', structure: 'Pronoun + would + Verb (Form 1) + Object',
   build: (pronoun, verb, level = 'advanced') => {

@@ -1,13 +1,11 @@
 // src/utils/naturalTranslation.js
 import { translateNoun } from '../data/nouns';
 
-// 1. Traducción de pronombres (capitalizados)
 export function translatePronoun(pronoun) {
   const map = { I: 'Yo', You: 'Tú', He: 'Él', She: 'Ella', We: 'Nosotros', They: 'Ellos', It: 'Eso' };
   return map[pronoun] || pronoun;
 }
 
-// 2. Colocaciones naturales (evita "hacer una decisión", usa "tomar una decisión")
 function getCollocation(verb, nounEn) {
   const key = `${verb}::${nounEn}`;
   const collocations = {
@@ -33,7 +31,6 @@ function getCollocation(verb, nounEn) {
   return collocations[key] || null;
 }
 
-// 3. Diccionario de conjugación de los 15 verbos esenciales
 const VERBS = {
   be: { pres: {I:'soy/estoy',You:'eres/estás',He:'es/está',She:'es/está',It:'es/está',We:'somos/estamos',They:'son/están'}, past: {I:'fui/estuve',You:'fuiste/estuviste',He:'fue/estuvo',She:'fue/estuvo',It:'fue/estuvo',We:'fuimos/estuvimos',They:'fueron/estuvieron'}, fut: {I:'seré/estaré',You:'serás/estarás',He:'será/estará',She:'será/estará',It:'será/estará',We:'seremos/estaremos',They:'serán/estarán'}, cond: {I:'sería/estaría',You:'serías/estarías',He:'sería/estaría',She:'sería/estaría',It:'sería/estaría',We:'seríamos/estaríamos',They:'serían/estarían'}, part: 'sido/estado', ger: 'siendo/estando' },
   have: { pres: {I:'tengo',You:'tienes',He:'tiene',She:'tiene',It:'tiene',We:'tenemos',They:'tienen'}, past: {I:'tuve',You:'tuviste',He:'tuvo',She:'tuvo',It:'tuvo',We:'tuvimos',They:'tuvieron'}, fut: {I:'tendré',You:'tendrás',He:'tendrá',She:'tendrá',It:'tendrá',We:'tendremos',They:'tendrán'}, cond: {I:'tendría',You:'tendrías',He:'tendría',She:'tendría',It:'tendría',We:'tendríamos',They:'tendrían'}, part: 'tenido', ger: 'teniendo' },
@@ -52,7 +49,6 @@ const VERBS = {
   live: { pres: {I:'vivo',You:'vives',He:'vive',She:'vive',It:'vive',We:'vivimos',They:'viven'}, past: {I:'viví',You:'viviste',He:'vivió',She:'vivió',It:'vivió',We:'vivimos',They:'vivieron'}, fut: {I:'viviré',You:'vivirás',He:'vivirá',She:'vivirá',It:'vivirá',We:'viviremos',They:'vivirán'}, cond: {I:'viviría',You:'vivirías',He:'viviría',She:'viviría',It:'viviría',We:'viviríamos',They:'vivirían'}, part: 'vivido', ger: 'viviendo' }
 };
 
-// Auxiliares para tiempos compuestos
 const HABER = {
   pres: {I:'he',You:'has',He:'ha',She:'ha',It:'ha',We:'hemos',They:'han'},
   past_imp: {I:'había',You:'habías',He:'había',She:'había',It:'había',We:'habíamos',They:'habían'},
@@ -65,35 +61,30 @@ const ESTAR = {
   fut: {I:'estaré',You:'estarás',He:'estará',She:'estará',It:'estará',We:'estaremos',They:'estarán'}
 };
 
-// 4. Función principal de traducción natural
 export function buildNaturalTranslation(pronoun, verb, nounEn, tenseKey) {
   const nounEs = translateNoun(nounEn);
   const pronounEs = translatePronoun(pronoun);
   const v = VERBS[verb];
   
-  if (!v) return `${pronounEs} [verbo] ${nounEs}.`; // Fallback de seguridad
+  if (!v) return `${pronounEs} [verbo] ${nounEs}.`;
 
-  // CASO ESPECIAL: Verbo "like" (gustar) ya viene conjugado con pronombre indirecto en el diccionario
+  // CASO ESPECIAL: Verbo "like" (gustar)
   if (verb === 'like') {
-    const verbForm = v[tenseKey.includes('perfect') ? 'part' : tenseKey.includes('continuous') ? 'ger' : tenseKey.replace('_simple','').replace('present_','').replace('past_','').replace('future_','').replace('perfect_','') || 'pres'] || v.pres[pronoun];
-    // Simplificación para like: usamos el mapa directo
     const tenseMap = { present_simple: 'pres', past_simple: 'past', future_simple: 'fut', present_conditional: 'cond' };
     const form = v[tenseMap[tenseKey] || 'pres'][pronoun];
     return `${form} ${nounEs}.`;
   }
 
-  // Buscar si hay una colocación especial (ej: make + a decision)
+  // Buscar colocación especial
   const collocation = getCollocation(verb, nounEn);
   const targetVerb = collocation ? collocation.v : verb;
   const targetNoun = collocation ? collocation.n : nounEs;
   const prep = collocation?.prep ? `${collocation.prep} ` : '';
   
-  // Obtener conjugación del verbo objetivo (si es colocación, usamos diccionario genérico o fallback)
   const targetV = VERBS[targetVerb] || v;
   
-  // Lógica de construcción por tipo de tiempo verbal
+  // Tiempos perfectos
   if (tenseKey.includes('perfect') && !tenseKey.includes('continuous')) {
-    // Tiempos perfectos: haber + participio
     let haberTense = 'pres';
     if (tenseKey.startsWith('past')) haberTense = 'past_imp';
     if (tenseKey.startsWith('future')) haberTense = 'fut';
@@ -103,8 +94,8 @@ export function buildNaturalTranslation(pronoun, verb, nounEn, tenseKey) {
     return `${pronounEs} ${aux} ${targetV.part} ${prep}${targetNoun}.`;
   }
   
+  // Tiempos continuos
   if (tenseKey.includes('continuous')) {
-    // Tiempos continuos: estar + gerundio
     let estarTense = 'pres';
     if (tenseKey.startsWith('past')) estarTense = 'past_imp';
     if (tenseKey.startsWith('future')) estarTense = 'fut';
@@ -113,7 +104,7 @@ export function buildNaturalTranslation(pronoun, verb, nounEn, tenseKey) {
     return `${pronounEs} ${aux} ${targetV.ger} ${prep}${targetNoun}.`;
   }
 
-  // Tiempos simples (present, past, future, conditional)
+  // Tiempos simples
   const tenseMap = { present_simple: 'pres', past_simple: 'past', future_simple: 'fut', present_conditional: 'cond' };
   const formKey = tenseMap[tenseKey] || 'pres';
   
