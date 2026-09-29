@@ -1,0 +1,1026 @@
+This file is a merged representation of a subset of the codebase, containing specifically included files, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: docs/**/*.md
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+docs/
+  ARCHITECTURE.md
+  PROJECT_SUMMARY.md
+  REQUIREMENTS.md
+  STATUS.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="docs/ARCHITECTURE.md">
+## 🔄 Actualizaciones Recientes (2026-09-20)
+
+### Sistema de Traducción Mejorada
+
+#### Nuevo Componente: validCollocations.js
+```javascript
+// Responsabilidades:
+// - Definir combinaciones válidas verbo+sustantivo
+// - Evitar frases sin sentido ("go the house")
+// - Gestionar preposiciones automáticas
+// - Proveer traducciones naturales predefinidas
+
+const VALID_COLLOCATIONS = {
+  go: {
+    nouns: ['home', 'to work', 'to school', 'abroad'],
+    defaultPrep: 'to'
+  },
+  // ... 14 verbos más
+};
+
+const NATURAL_TRANSLATIONS = {
+  'I will need English tomorrow.': 'Necesitaré inglés mañana.',
+  // ... ~15 frases comunes
+};
+
+Flujo de Traducción Actualizado
+Usuario genera frase
+│
+▼
+buildPhrase(pronoun, verb, level)
+│
+├─► getRandomValidNoun(verb, level)
+│   └─► Selecciona de VALID_COLLOCATIONS[verb]
+│
+├─► getPreposition(verb, noun)
+│   └─► Retorna preposición si es necesaria
+│
+├─► Construye frase en inglés
+│   └─► "I will go to work tomorrow."
+│
+─► getNaturalTranslation(englishPhrase)
+│   ├─► Busca en NATURAL_TRANSLATIONS
+│   └─► Si existe, retorna traducción
+│
+└─► Si no existe:
+    ─► buildFallbackTranslation()
+        ─► ⚠️ Actualmente con marcadores "(futuro)"
+Problemas Conocidos (Known Issues)
+Bug #1: Colocaciones Inválidas
+Archivo: src/data/validCollocations.js
+Problema: "to away" en lista de go
+Impacto: Genera "I will go to away" (incorrecto)
+Solución: Eliminar "to away", dejar solo "away" o "to work"
+Bug #2: Traducciones con Marcadores
+Archivo: src/data/tenses.js (función buildFallbackTranslation)
+Problema: Retorna "Yo necesitar (futuro) dinero"
+Impacto: Traducción incomprensible
+Solución:
+Opción A: Implementar conjugación completa
+Opción B: Retornar solo si existe en NATURAL_TRANSLATIONS
+Bug #3: Preposiciones Duplicadas
+Archivo: src/data/validCollocations.js (función getPreposition)
+Problema: "go to to work" (doble "to")
+Impacto: Frase en inglés incorrecta
+Solución: Validar si noun ya empieza con preposición
+Estructura de Datos Actualizada
+localStorage (Actualizado)
+javascript
+
+{
+  "frasediaria_history": [
+    {
+      "date": "2026-09-20",
+      "tense": "Future Simple",
+      "tenseKey": "future_simple",
+      "verb": "need",
+      "pronoun": "I",
+      "en": "I will need English tomorrow.",
+      "es": "Necesitaré inglés mañana.",  // ✅ Correcto
+      // "es": "Yo necesitar (futuro) inglés."  // ❌ Bug actual
+      "structure": "Sujeto + WILL + Verbo (forma normal) + Complemento"
+    }
+  ],
+  "frasediaria_settings": {
+    "level": "beginner",
+    "audioSpeed": 0.9
+  }
+}
+
+Métricas de Calidad (Actualizadas)
+Calidad de Traducciones
+Tipo
+Porcentaje
+Estado
+Traducciones predefinidas
+100%
+✅ Perfecto
+Fallback con conjugación
+0%
+❌ No implementado
+Fallback con marcadores
+40%
+⚠️ Incomprensible
+Total estimado
+60%
+⚠️ Necesita mejora
+Cobertura de Colocaciones
+Verbo
+Sustantivos Válidos
+Estado
+go
+7
+✅ Bueno
+need
+9
+✅ Bueno
+work
+7
+✅ Bueno
+speak
+6
+✅ Bueno
+...
+...
+...
+Total
+~100 combinaciones
+️ Limitado
+Testing Strategy (Actualizada)
+Testing Manual (Prioritario)
+
+// Checklist de testing por nivel
+const TESTING_CHECKLIST = {
+  beginner: {
+    estructuras: ['present_simple', 'past_simple', 'future_simple'],
+    verbos: ['work', 'need', 'go', 'live'],
+    validar: [
+      '✅ Frase en inglés es gramaticalmente correcta',
+      '✅ Traducción al español es natural',
+      '✅ No hay marcadores "(futuro)", "(ando/iendo)"',
+      '✅ Preposiciones son correctas'
+    ]
+  },
+  intermediate: { /* ... */ },
+  advanced: { /* ... */ }
+};
+
+// Checklist de testing por nivel
+const TESTING_CHECKLIST = {
+  beginner: {
+    estructuras: ['present_simple', 'past_simple', 'future_simple'],
+    verbos: ['work', 'need', 'go', 'live'],
+    validar: [
+      '✅ Frase en inglés es gramaticalmente correcta',
+      '✅ Traducción al español es natural',
+      '✅ No hay marcadores "(futuro)", "(ando/iendo)"',
+      '✅ Preposiciones son correctas'
+    ]
+  },
+  intermediate: { /* ... */ },
+  advanced: { /* ... */ }
+};
+</file>
+
+<file path="docs/PROJECT_SUMMARY.md">
+# 📋 Resumen del Proyecto - FraseDiaria v2.1
+
+## ✅ Lo que hemos construido
+
+### Fase 1: Prototipos (Completado)
+✅ Prototipo V1: HTML + API Qwen
+✅ Prototipo V2: Generador local + 3 niveles + TTS
+✅ Validación de usuario
+
+### Fase 2: Producción (En Progreso - 70% completado)
+
+#### Infraestructura
+✅ React 18 + Vite 5
+✅ Tailwind CSS 3.4
+✅ Estructura de carpetas completa
+✅ Configuración PWA básica
+
+#### Funcionalidades Core
+✅ 15 estructuras verbales implementadas
+✅ 10 verbos irregulares + 5 regulares
+✅ 30 sustantivos organizados por nivel
+✅ 7 pronombres personales
+✅ Semilla basada en fecha (consistencia diaria)
+✅ 3 niveles: Principiante, Intermedio, Avanzado
+✅ Contexto enriquecido (uso, ejemplo, tip)
+
+#### Sistema de Traducción (Mejorado en esta sesión)
+✅ Diccionario de colocaciones válidas (`VALID_COLLOCATIONS`)
+✅ Sistema de preposiciones automáticas (`getPreposition`)
+✅ Traducciones naturales predefinidas (`NATURAL_TRANSLATIONS`)
+✅ Diccionario de verbos en español (`VERB_ES`)
+✅ Funciones helper a prueba de fallos
+
+#### Funcionalidades Adicionales
+✅ Audio TTS con Web Speech API (0.9x y 0.7x)
+✅ Sistema de flashcards básico
+✅ Persistencia con localStorage
+✅ Historial de frases (últimas 30)
+✅ Favoritos
+✅ UI responsive con dark mode
+
+### Sesión Actual (2026-09-20) - Avances
+
+#### Implementado
+1. **Diccionario de Colocaciones** (`VALID_COLLOCATIONS`)
+   - 15 verbos con sustantivos válidos
+   - Evita combinaciones sin sentido como "go the house"
+   - Incluye preposiciones por defecto
+
+2. **Sistema de Traducción Mejorada**
+   - Función `getNaturalTranslation()` para frases predefinidas
+   - Función `buildFallbackTranslation()` para frases nuevas
+   - Manejo de preposiciones (to → a, at → en, in → en)
+
+3. **Corrección de Errores**
+   - Eliminación de errores "undefined" en conjugaciones
+   - Funciones `getHaber()` y `getEstar()` a prueba de fallos
+   - Explicaciones pedagógicas mejoradas (sin "Form 1")
+
+4. **Reescritura Completa de `tenses.js`**
+   - 15 estructuras funcionales
+   - Cada estructura con su propia lógica de construcción
+   - Integración con diccionario de colocaciones
+
+##  Problemas Actuales (Críticos)
+
+### Bug #1: Frases Gramaticalmente Incorrectas
+**Ejemplo:** "I will go to away tomorrow"
+- **Problema:** "to away" es incorrecto (away es adverbio)
+- **Causa:** `VALID_COLLOCATIONS.go` incluye "to away"
+- **Impacto:** Usuario aprende inglés incorrecto
+- **Solución:** Corregir diccionario
+
+### Bug #2: Traducciones con Marcadores
+**Ejemplo:** "Yo necesitar (futuro) dinero"
+**Ejemplo:** "Yo estaré ir (ando/iendo) to work"
+- **Problema:** Marcadores "(futuro)", "(ando/iendo)" no son español natural
+- **Causa:** `buildFallbackTranslation` no conjuga verbos
+- **Impacto:** Confusión del usuario, traducción incomprensible
+- **Solución:** Implementar conjugación completa o eliminar fallback
+
+### Bug #3: Preposiciones Duplicadas
+**Ejemplo:** "go to to work"
+- **Problema:** Duplicación de preposición "to"
+- **Causa:** Lógica de `getPreposition` no verifica si el sustantivo ya incluye preposición
+- **Impacto:** Frase incorrecta en inglés
+- **Solución:** Validar prefijos en sustantivos
+
+##  Estructura del Proyecto Actual
+
+frasediaria/
+├── public/
+│ └── icons/ ❌ Pendiente (192x192, 512x512)
+├── src/
+│ ├── components/
+│ │ ├── PhraseCard.jsx ✅ Funcional
+│ │ ├── LevelSelector.jsx ✅ Funcional
+│ │ ├── FlashcardDeck.jsx ✅ Funcional (básico)
+│ │ └── HistoryList.jsx ✅ Funcional
+│ ├── hooks/
+│ │ ├── usePhraseGenerator.js ✅ Funcional (con bugs de traducción)
+│ │ ├── useFlashcards.js ✅ Funcional
+│ │ └── useAudio.js ✅ Funcional
+│ ├── data/
+│ │ ├── verbs.js ✅ Completo (15 verbos)
+│ │ ├── nouns.js ✅ Completo (30 sustantivos)
+│ │ ├── tenses.js ✅ Completo (15 estructuras) con bugs
+│ │ ├── pronouns.js ✅ Completo (7 pronombres)
+│ │ └── validCollocations.js ✅ Nuevo (implementado en esta sesión)
+│ ├── utils/
+│ │ └── storage.js ✅ Funcional
+│ ├── App.jsx ✅ Funcional
+│ ├── main.jsx ✅ Funcional
+│ └── index.css ✅ Funcional
+├── index.html ✅ Configurado
+├── vite.config.js ✅ Configurado (PWA plugin)
+├── tailwind.config.js ✅ Configurado
+├── package.json ✅ Dependencias instaladas
+└── Documentación/
+├── STATUS-1.md ✅ Actualizado
+├── REQUIREMENTS.md ✅ Actualizado
+├── ARCHITECTURE.md ✅ Actualizado
+└── PROJECT_SUMMARY.md ✅ Este archivo
+
+
+## 🎯 Funcionalidades Implementadas (Detalle)
+
+### Generador de Frases
+✅ 15 estructuras verbales (del documento "Estructuras del Inglés")
+✅ 10 verbos irregulares + 5 regulares
+✅ 30 sustantivos organizados por nivel
+✅ 7 pronombres personales
+✅ Semilla basada en fecha (YYYYMMDD)
+✅ 3 niveles con filtrado de tiempos
+✅ Contexto enriquecido (uso, ejemplo, tip)
+⚠️ Traducciones necesitan corrección (60% correctas)
+
+### Sistema de Traducción
+✅ Diccionario `VALID_COLLOCATIONS` (15 verbos)
+✅ Función `getPreposition()` automática
+✅ Diccionario `NATURAL_TRANSLATIONS` (~15 frases)
+⚠️ Función `buildFallbackTranslation()` con marcadores
+❌ Conjugación de verbos en español incompleta
+
+### Sistema de Flashcards
+✅ Agregar frases automáticamente
+✅ Sistema de repaso espaciado (Leitner simplificado)
+✅ 5 cajas de dominio
+✅ Calificación: Difícil / Normal / Fácil
+✅ Cálculo de próximo repaso
+⚠️ Sin estadísticas visuales
+
+### Audio (TTS)
+✅ Web Speech API nativa
+✅ Velocidad normal (0.9x) y lenta (0.7x)
+✅ Estado de reproducción
+✅ Fallback si no soportado
+
+### Persistencia
+✅ localStorage:
+  - Historial (últimas 30 frases)
+  - Favoritos (sin límite)
+  - Flashcards con progreso
+  - Settings (nivel seleccionado)
+
+### PWA
+✅ Manifest.json configurado
+✅ Service Worker (Vite PWA Plugin)
+✅ Offline-first
+❌ Iconos (pendiente agregar)
+❌ Testing de instalación
+
+### UI/UX
+✅ Diseño moderno con gradientes
+✅ Responsive (mobile-first)
+✅ Animaciones suaves
+✅ Dark mode por defecto
+⚠️ Accesibilidad básica (ARIA labels pendientes)
+
+## 📊 Métricas Actuales
+
+### Funcionalidad
+- ✅ Genera 1 frase/día consistente
+- ✅ 3 niveles funcionan
+- ⚠️ Traducciones: 60% correctas (estimado)
+- ✅ Audio se reproduce
+- ✅ Flashcards se guardan
+- ❌ PWA no instalable (sin iconos)
+
+### Performance (Estimado)
+- First Contentful Paint: ~1.2s
+- Time to Interactive: ~2.5s
+- Bundle size: ~150KB (sin optimizar)
+- Lighthouse PWA score: ~70/100 (sin iconos)
+
+### Calidad de Código
+- ✅ Sin errores de consola críticos
+- ✅ Funciones helper a prueba de fallos
+- ✅ Código bien estructurado
+- ⚠️ Comentarios en español (deberían ser en inglés)
+
+## 🚀 Próximos Pasos (Priorizados)
+
+### Prioridad 1: Corrección de Bugs Críticos
+1. **Corregir `VALID_COLLOCATIONS`**
+   - Eliminar "to away" del verbo `go`
+   - Revisar todas las entradas
+   - Añadir más verbos comunes
+
+2. **Corregir `buildFallbackTranslation`**
+   - Eliminar marcadores "(futuro)", "(ando/iendo)"
+   - Implementar conjugación básica o
+   - Retornar solo traducciones predefinidas
+
+3. **Expandir `NATURAL_TRANSLATIONS`**
+   - Mínimo 50 frases comunes
+   - Cubrir todas las estructuras
+   - Incluir ejemplos de cada nivel
+
+4. **Testing Manual Completo**
+   - Probar cada nivel (10 frases cada uno)
+   - Validar gramática inglesa
+   - Validar traducciones españolas
+
+### Prioridad 2: PWA y Deploy
+5. **Generar Iconos PWA**
+   - 192x192 px
+   - 512x512 px
+   - Formato PNG
+
+6. **Testing en Android**
+   - Instalar en Chrome Android
+   - Verificar funcionamiento offline
+   - Probar audio TTS
+
+7. **Deploy en Vercel**
+   - git init
+   - git add .
+   - git commit -m "v2.1"
+   - gh repo create
+   - Deploy automático
+
+### Prioridad 3: Features Adicionales
+8. **Sistema de Estadísticas**
+   - Frases generadas por día
+   - Progreso de flashcards
+   - Nivel de dominio
+
+9. **Quiz Interactivo**
+   - Completar frase
+   - Seleccionar traducción
+   - Puntuación
+
+10. **Mejoras de UI**
+    - Animaciones adicionales
+    - Tutorial inicial
+    - Tooltips explicativos
+
+## 📈 Roadmap Actualizado
+
+### Fase 2.1: Corrección de Bugs (Actual)
+**Duración estimada:** 1-2 días
+**Estado:** En progreso (50%)
+- [x] Diccionario de colocaciones
+- [x] Sistema de preposiciones
+- [ ] Corrección de bugs críticos
+- [ ] Testing completo
+- [ ] Deploy
+
+### Fase 2.2: PWA Completa
+**Duración estimada:** 1 día
+**Estado:** Pendiente
+- [ ] Iconos PWA
+- [ ] Testing Android
+- [ ] Service Worker optimizado
+- [ ] Offline completo
+
+### Fase 3: Backend (Opcional)
+**Duración estimada:** 3-5 días
+**Estado:** Pendiente
+- [ ] Vercel Serverless Functions
+- [ ] Supabase (PostgreSQL)
+- [ ] Autenticación
+- [ ] Sincronización
+
+### Fase 4: Features Avanzadas
+**Duración estimada:** 5-7 días
+**Estado:** Pendiente
+- [ ] Quiz interactivo
+- [ ] Estadísticas visuales
+- [ ] Logros/badges
+- [ ] Compartir redes sociales
+
+## 🎓 Aprendizajes Clave (Actualizados)
+
+### Arquitectura
+✅ Offline-first: localStorage + Service Worker funciona bien
+✅ Generador determinista: Semilla basada en fecha es efectiva
+⚠️ Traducciones: Diccionario local es limitado, considerar API
+
+### PWA
+✅ Vite PWA Plugin simplifica configuración
+⚠️ Iconos son obligatorios para instalación
+✅ Service Worker cachea recursos correctamente
+
+### React
+✅ Custom Hooks encapsulan bien la lógica
+✅ useState/useEffect suficientes para esta app
+✅ Componentes reutilizables funcionan
+
+### Traducciones
+️ Traducción literal no funciona ("yo trabajar inglés")
+✅ Colocaciones son esenciales ("tomar una decisión")
+️ Conjugación en español es compleja
+✅ Diccionario predefinido es la mejor opción inicial
+
+## 📚 Recursos Utilizados
+
+### Documentos Base
+- "Estructuras del Inglés.docx" - 15 estructuras verbales
+- "Vocabulario y Guía de Inglés.docx" - Vocabulario base
+- "prototipo-daily_english_V1.0.2.html" - Prototipo inicial
+
+### APIs y Librerías
+- React 18: https://react.dev
+- Vite: https://vitejs.dev
+- Tailwind CSS: https://tailwindcss.com
+- Vite PWA Plugin: https://vite-pwa-org.netlify.app
+- Web Speech API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
+
+### Herramientas
+- Vercel: https://vercel.com (deploy)
+- GitHub: https://github.com (repositorio)
+- Lighthouse: Chrome DevTools (performance)
+
+##  Issues Abiertos
+
+### Issue #1: Traducciones Incorrectas
+**Severidad:** Crítica
+**Descripción:** Frases como "Yo necesitar (futuro) dinero" confunden al usuario
+**Solución:** Implementar conjugación completa o usar solo diccionario
+
+### Issue #2: Colocaciones Inválidas
+**Severidad:** Crítica
+**Descripción:** "I will go to away" es gramaticalmente incorrecto
+**Solución:** Revisar y corregir `VALID_COLLOCATIONS`
+
+### Issue #3: Sin Iconos PWA
+**Severidad:** Alta
+**Descripción:** No se puede instalar como PWA
+**Solución:** Generar y agregar iconos 192x192 y 512x512
+
+### Issue #4: Sin Testing
+**Severidad:** Media
+**Descripción:** No hay tests automatizados
+**Solución:** Implementar Vitest + Playwright
+
+## 💡 Decisiones Técnicas (Actualizadas)
+
+| Decisión | Razón | Estado |
+|----------|-------|--------|
+| React + Vite | Rápido, moderno, buen DX | ✅ Confirmado |
+| Tailwind CSS | Utility-first, rápido | ✅ Confirmado |
+| localStorage | Simple, sin backend | ✅ Confirmado |
+| Web Speech API | Gratis, nativo | ✅ Confirmado |
+| Vercel | Deploy automático | ✅ Confirmado |
+| Sin backend inicial | MVP rápido | ✅ Confirmado |
+| Diccionario local | Sin API keys, offline | ️ Limitado, revisar |
+| Traducciones híbridas | Balance calidad/offline | 🚧 En validación |
+
+---
+
+**Última actualización:** 2026-09-20
+**Versión:** v2.1 (En desarrollo)
+**Próximo hito:** Corrección de bugs críticos y deploy
+</file>
+
+<file path="docs/REQUIREMENTS.md">
+# 📋 Requisitos Técnicos - FraseDiaria
+
+## 🎯 Objetivo
+
+Crear una PWA (Progressive Web App) instalable en Android para práctica diaria de inglés con:
+
+- Generación de frases en 15 estructuras verbales
+- 3 niveles de dificultad (Principiante, Intermedio, Avanzado)
+- Sistema de flashcards con repaso espaciado
+- Audio nativo (Web Speech API)
+- Offline-first
+
+---
+
+## 🏗️ Stack Tecnológico
+
+### Frontend
+
+- **Framework**: React 18 + Vite
+- **Estilos**: Tailwind CSS
+- **Estado**: React Hooks (useState, useEffect, useContext)
+- **Persistencia**: localStorage + IndexedDB (si crece)
+- **PWA**: Vite PWA Plugin (manifest + service worker)
+
+### Backend (Fase 3 - Opcional)
+
+- **Hosting**: Vercel
+- **Funciones**: Vercel Serverless Functions
+- **Base de datos**: Supabase (PostgreSQL)
+- **API**: Qwen (enriquecimiento de contexto)
+
+### Herramientas
+
+- **Build**: Vite
+- **Linting**: ESLint + Prettier
+- **Testing**: Vitest (unit) + Playwright (E2E)
+- **Deploy**: Vercel (automático desde GitHub)
+
+---
+
+## 📦 Estructura del Proyecto
+
+frasediaria/
+├── public/
+│   ├── icons/              # Iconos PWA (192x192, 512x512)
+│   ├── manifest.json       # PWA manifest
+│   └── sw.js              # Service Worker (generado)
+├── src/
+│   ├── components/
+│   │   ├── PhraseCard.jsx      # Tarjeta de frase del día
+│   │   ├── LevelSelector.jsx   # Selector de nivel
+│   │   ├── FlashcardDeck.jsx   # Mazo de flashcards
+│   │   ├── AudioButton.jsx     # Botón TTS
+│   │   └── HistoryList.jsx     # Historial de frases
+│   ├── data/
+│   │   ├── verbs.js            # 10 irregulares + 5 regulares
+│   │   ├── nouns.js            # 30 sustantivos
+│   │   ├── tenses.js           # 15 estructuras verbales
+│   │   └── vocabulary.js       # Vocabulario completo
+│   ├── hooks/
+│   │   ├── usePhraseGenerator.js   # Lógica de generación
+│   │   ├── useFlashcards.js        # Sistema de repaso
+│   │   └── useAudio.js             # Web Speech API
+│   ├── utils/
+│   │   ├── storage.js          # localStorage helpers
+│   │   ├── date.js             # Formateo de fechas
+│   │   └── seed.js             # Generador pseudo-aleatorio
+│   ├── context/
+│   │   └── AppContext.jsx      # Estado global
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── index.html
+├── vite.config.js
+├── tailwind.config.js
+├── package.json
+└── README.md
+
+---
+
+## 🎨 Requisitos de UI/UX
+
+### Diseño
+
+- **Tema**: Dark mode por defecto (gradientes índigo/púrpura)
+- **Tipografía**: System fonts (-apple-system, Segoe UI)
+- **Responsive**: Mobile-first (320px - 1440px)
+- **Animaciones**: Transiciones suaves (200-300ms)
+
+### Componentes Clave
+
+1. **PhraseCard**
+   - Frase en inglés (grande, bold)
+   - Traducción al español (mediana, italic)
+   - Estructura gramatical (monospace, destacada)
+   - Contexto de uso (ejemplo real, tips)
+   - Botones de acción (escuchar, guardar, copiar)
+
+2. **FlashcardDeck**
+   - Tarjeta frontal (frase en inglés)
+   - Tarjeta trasera (traducción + estructura)
+   - Swipe para siguiente/anterior
+   - Sistema de calificación (fácil/difícil)
+   - Contador de repaso
+
+3. **LevelSelector**
+   - 3 botones con colores distintivos
+   - Indicador visual del nivel activo
+   - Transición suave al cambiar
+
+4. **AudioButton**
+   - Icono de altavoz
+   - Estado de reproducción
+   - Velocidad ajustable (normal/lento)
+
+---
+
+## 🔧 Requisitos Funcionales
+
+### Generador de Frases
+
+- **Input**: Nivel + Fecha del día
+- **Output**: Frase en inglés + traducción + estructura
+- **Lógica**:
+  - Semilla basada en fecha (consistencia diaria)
+  - Filtrado de tiempos verbales por nivel
+  - Combinación pseudo-aleatoria (pronombre + verbo + objeto)
+- **Vocabulario**: Basado en documentos adjuntos (10 verbos irregulares, 30 sustantivos)
+
+### Flashcards
+
+- **Fuente**: Historial de frases generadas
+- **Repaso espaciado**: Algoritmo simplificado de Leitner
+  - 5 cajas (niveles de dominio)
+  - Promoción/democión según acierto
+- **Modos**:
+  - Repaso diario (10-20 tarjetas)
+  - Repaso completo (todas las pendientes)
+
+### Audio (TTS)
+
+- **API**: Web Speech API (nativa del navegador)
+- **Idioma**: en-US (inglés americano)
+- **Velocidad**: 0.9x (normal), 0.7x (lento)
+- **Fallback**: Alerta si no soportado
+
+### Persistencia
+
+- **localStorage**:
+  - Historial de frases (últimas 30)
+  - Favoritos (sin límite)
+  - Flashcards en repaso
+  - Nivel seleccionado
+  - Progreso de flashcards
+
+### PWA
+
+- **Instalable**: Manifest + Service Worker
+- **Offline**: Cache de recursos estáticos
+- **Iconos**: 192x192, 512x512 (Android)
+- **Splash screen**: Automático al instalar
+
+---
+
+## 🚀 Requisitos de Deploy
+
+### Vercel
+
+- **Build command**: `npm run build`
+- **Output directory**: `dist`
+- **Environment variables**: (ninguna inicialmente)
+- **Domain**: frasediaria.vercel.app (o personalizado)
+
+### GitHub
+
+- **Repo**: Público (para portfolio)
+- **Branches**: main (producción), develop (desarrollo)
+- **CI/CD**: Automático desde main
+
+---
+
+## 📊 Métricas de Éxito
+
+### Funcionales
+
+- ✅ Genera 1 frase/día consistente
+- ✅ 3 niveles funcionan correctamente
+- ✅ Audio se reproduce sin errores
+- ✅ Flashcards se guardan y repasan
+- ✅ Se instala en Android Chrome
+
+### Performance
+
+- ✅ Lighthouse score > 90 (PWA)
+- ✅ First Contentful Paint < 1.5s
+- ✅ Time to Interactive < 3s
+- ✅ Bundle size < 200KB (gzipped)
+
+### UX
+
+- ✅ UI responsive en 320px - 1440px
+- ✅ Animaciones fluidas (60fps)
+- ✅ Sin errores de consola
+- ✅ Accesibilidad básica (ARIA labels)
+
+---
+
+## 🔒 Seguridad
+
+- **Sin autenticación**: App pública, sin login
+- **Sin datos sensibles**: Solo localStorage local
+- **HTTPS**: Forzado por Vercel
+- **CORS**: No aplica (sin backend inicial)
+
+---
+
+## 📚 Recursos de Referencia
+
+### Documentos Base
+
+1. `Estructuras del Inglés.docx` - 15 estructuras verbales
+2. `Vocabulario y Guía de Inglés.docx` - Vocabulario esencial
+3. `prototipo-daily_english_V1.0.2.html` - Prototipo inicial
+
+### APIs Externas
+
+- **Web Speech API**: TTS nativo (sin API key)
+- **Qwen API**: Enriquecimiento de contexto (opcional, fase 3)
+
+### Librerías
+
+- React 18: <https://react.dev>
+- Vite: <https://vitejs.dev>
+- Tailwind CSS: <https://tailwindcss.com>
+- Vite PWA Plugin: <https://vite-pwa-org.netlify.app>
+
+---
+
+## 🐛 Known Issues / Limitaciones
+
+- iOS Safari: Service Workers limitados (no prioridad)
+- Web Speech API: Voces varían según dispositivo/navegador
+- localStorage: Límite ~5MB (suficiente para esta app)
+- Sin sincronización: Datos solo locales (fase 3 con Supabase)
+- **Traducciones: 40% usan marcadores "(futuro)" (Bug crítico)**
+- **Colocaciones: "to away" genera frases incorrectas (Bug crítico)**
+- **PWA: Sin iconos, no instalable (Alta prioridad)**
+
+---
+
+## 📝 Decisiones Técnicas
+
+| Decisión | Razón | Alternativa descartada |
+
+|----------|-------|------------------------|
+| React + Vite | Rápido, moderno, buen DX | Next.js (overkill para SPA) |
+| Tailwind CSS | Utility-first, rápido de desarrollar | CSS Modules (más verbose) |
+| localStorage | Simple, sin backend | IndexedDB (complejidad innecesaria) |
+| Web Speech API | Gratis, nativo, sin API key | Google TTS (requiere API key) |
+| Vercel | Deploy automático, gratis | Netlify (similar, pero Vercel preferido) |
+| Sin backend inicial | MVP rápido, validar primero | Supabase desde inicio (overkill) |
+
+---
+
+### *Última actualización: 2026-09-17*
+</file>
+
+<file path="docs/STATUS.md">
+# 📊 Status del Proyecto: FraseDiaria
+
+**Estado Actual:** FASE 2 - Mejora de Traducciones y Colocaciones (En Progreso)
+
+## ✅ Completado
+
+### Fase 1: Prototipos
+- [x] Prototipo V1 (HTML + API Qwen)
+- [x] Prototipo V2 (Generador local + 3 niveles + TTS)
+- [x] Validación de usuario
+- [x] Definición de requisitos técnicos
+
+### Fase 2: Migración React + Vite
+- [x] Configuración inicial de React + Vite + Tailwind
+- [x] Resolución de errores de build (PostCSS, caché de Vite)
+- [x] Renderizado local exitoso
+- [x] Implementación de 15 estructuras verbales
+- [x] Sistema de 3 niveles (Principiante, Intermedio, Avanzado)
+- [x] Audio TTS con Web Speech API
+- [x] Sistema de flashcards básico
+- [x] Persistencia con localStorage
+
+### Sesión Actual (2026-09-19/20)
+- [x] Detección de problemas con traducciones literales
+- [x] Implementación de diccionario de colocaciones válidas (`VALID_COLLOCATIONS`)
+- [x] Sistema de preposiciones automáticas (`getPreposition`)
+- [x] Traducciones naturales predefinidas (`NATURAL_TRANSLATIONS`)
+- [x] Corrección de errores de undefined en `buildNaturalTranslation`
+- [x] Mejora de explicaciones pedagógicas (eliminación de "Form 1")
+- [x] Reescritura completa de `tenses.js` con 15 estructuras
+- [x] Funciones helper a prueba de fallos (`getHaber`, `getEstar`)
+- [x] Integración de diccionario de verbos en español (`VERB_ES`)
+
+## 🚧 En Progreso
+
+### Corrección de Errores Críticos
+- [ ] Corregir "I will go to away" → debería ser "go away" o "go to work"
+- [ ] Eliminar marcadores "(futuro)", "(ando/iendo)" de traducciones
+- [ ] Corregir "Yo estaré ir (ando/iendo) to work" → traducción gramaticalmente incorrecta
+- [ ] Validar todas las combinaciones verbo+sustantivo en `VALID_COLLOCATIONS`
+- [ ] Expandir `NATURAL_TRANSLATIONS` con más frases comunes (actual: ~15 frases)
+- [ ] Testing completo de las 15 estructuras verbales
+
+### PWA y Deploy
+- [ ] Generación de iconos PWA (192x192, 512x512)
+- [ ] Testing de instalación PWA en Android Chrome
+- [ ] Deploy en Vercel
+- [ ] Testing offline (Service Worker)
+
+## 📋 Pendiente
+
+### Fase 3: Backend (Opcional)
+- [ ] Backend en Vercel (Serverless Functions)
+- [ ] Base de datos Supabase para historial/favoritos en nube
+- [ ] Autenticación de usuarios
+- [ ] Sincronización multi-dispositivo
+
+### Fase 4: Features Avanzadas
+- [ ] Sistema de progreso y estadísticas visuales
+- [ ] Quiz interactivo
+- [ ] Logros/badges
+- [ ] Compartir en redes sociales
+- [ ] Modo oscuro/claro toggle
+
+##  Timeline Actualizado
+
+| Fase | Duración | Estado | Fecha |
+|------|----------|--------|-------|
+| Prototipo V1-V2 | 2 días | ✅ Completado | 2026-09-15/16 |
+| Migración React + Vite | 1 día | ✅ Completado | 2026-09-17 |
+| Mejora de Traducciones | 1-2 días | 🚧 En Progreso | 2026-09-19/20 |
+| Iconos PWA + Testing | Pendiente | 📋 Pendiente | - |
+| Deploy Vercel | Pendiente |  Pendiente | - |
+
+## 🐛 Bugs Críticos Identificados
+
+### Bug #1: Colocaciones Inválidas
+**Problema:** "I will go to away tomorrow"
+- **Causa:** `VALID_COLLOCATIONS.go` incluye "to away" como sustantivo válido
+- **Solución:** "away" es adverbio, no debe llevar "to". Debe ser solo "away" o "to work"
+- **Prioridad:** 🔴 Alta
+
+### Bug #2: Traducciones con Marcadores
+**Problema:** "Yo necesitar (futuro) dinero" / "Yo estaré ir (ando/iendo) to work"
+- **Causa:** Función `buildFallbackTranslation` no conjuga verbos correctamente
+- **Solución:** Implementar conjugación completa o usar solo traducciones predefinidas
+- **Prioridad:** 🔴 Alta
+
+### Bug #3: Preposiciones Duplicadas
+**Problema:** "go to to work" (preposición duplicada)
+- **Causa:** `getPreposition` añade "to" pero el sustantivo ya incluye "to work"
+- **Solución:** Validar que el sustantivo no empiece con preposición antes de añadirla
+- **Prioridad:** 🟡 Media
+
+## 🎯 Próximos Pasos (Priorizados)
+
+### Inmediato (Esta Sesión)
+1. Corregir `VALID_COLLOCATIONS` - Eliminar "to away", validar todas las entradas
+2. Corregir `buildFallbackTranslation` - Eliminar marcadores "(futuro)", "(ando/iendo)"
+3. Expandir `NATURAL_TRANSLATIONS` - Mínimo 50 frases comunes
+4. Testing manual de cada nivel (Principiante, Intermedio, Avanzado)
+
+### Corto Plazo (Próxima Sesión)
+5. Generar iconos PWA (192x192, 512x512)
+6. Testing en Android Chrome real
+7. Deploy en Vercel
+8. Testing offline
+
+### Largo Plazo
+9. Sistema de estadísticas
+10. Quiz interactivo
+11. Backend (si es necesario)
+
+## 📝 Notas de Decisión Recientes
+
+### Decisión 1: Offline-First Mantenido
+- **Decisión:** Mantener localStorage + Service Worker sin backend inicial
+- **Razón:** MVP rápido, validar antes de escalar
+- **Alternativa descartada:** Supabase desde inicio (overkill)
+
+### Decisión 2: Traducciones Híbridas
+- **Decisión:** Usar diccionario de traducciones predefinidas + fallback
+- **Razón:** Evitar dependencias de API externa (DeepL) en fase inicial
+- **Alternativa descartada:** API de DeepL (requiere API key, latencia)
+
+### Decisión 3: Prioridad Android
+- **Decisión:** Enfocar testing en Android Chrome primero
+- **Razón:** Mayor cuota de mercado, Service Workers completos
+- **iOS:** Se deja para fase de escalado
+
+### Decisión 4: Explicaciones Pedagógicas
+- **Decisión:** Lenguaje simple, sin tecnicismos ("Form 1", "Form 2")
+- **Razón:** App dirigida a principiantes, debe ser accesible
+- **Ejemplo:** "Verbo (forma normal)" en lugar de "Verb (Form 1)"
+
+## 📊 Métricas Actuales
+
+### Funcionalidad
+- ✅ Genera frases en 3 niveles
+- ️ Traducciones necesitan corrección (60% correctas estimadas)
+- ✅ Audio funciona
+- ✅ Flashcards se guardan
+- ❌ PWA no instalable (faltan iconos)
+
+### Performance (Estimado)
+- Bundle size: ~150KB (sin optimizar)
+- First Contentful Paint: ~1.2s (local)
+- Lighthouse PWA score: ~70 (sin iconos)
+
+### Calidad de Código
+- Sin errores de consola críticos
+- Funciones helper a prueba de fallos
+- Código bien estructurado
+
+---
+
+**Última actualización:** 2026-09-20 (Sesión en curso)
+**Próxima revisión:** Al completar corrección de bugs críticos
+</file>
+
+</files>
